@@ -9,3 +9,14 @@ GET {{BApi_HostAddress}}/todos/1
 Accept: application/json
 
 ###
+
+POST {{BApi_HostAddress}}/execute
+Content-Type: application/json
+
+{
+  "code": "# Başladı\nprint(\"Miyav!\")\n",
+  "timestamp": "2025-06-26T14:01:46.283Z",
+  "user": "test_kullanici"
+}
+
+###
