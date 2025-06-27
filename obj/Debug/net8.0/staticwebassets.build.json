@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "ej7pEfgJXGKeolsWXnkGsf/s6D75rRQpmj8xHVYGfX4=",
+  "Source": "BApi",
+  "BasePath": "_content/BApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
