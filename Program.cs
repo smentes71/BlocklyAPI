@@ -1,8 +1,19 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Diagnostics;
 using System.Text;
 
 var builder = WebApplication.CreateSlimBuilder(args);
+
+// CORS servisini ekle
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -10,6 +21,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var app = builder.Build();
+
+// CORS middleware'ini kullan
+app.UseCors("AllowAll");
 
 var sampleTodos = new Todo[] {
     new(1, "Walk the dog"),
