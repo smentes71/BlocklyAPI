@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using System.Diagnostics;
 using System.Text;
 
@@ -32,11 +32,13 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
     try
     {
         // Create prun.py file with the received code
-        var pythonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "prun.py");
+       // var pythonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "prun.py");
+       // await File.WriteAllTextAsync(pythonFilePath, request.Code, Encoding.UTF8);
+        var pythonFilePath = "/home/pi/pidog/examples/prun.py";
         await File.WriteAllTextAsync(pythonFilePath, request.Code, Encoding.UTF8);
 
         // Execute the Python file
-        var processStartInfo = new ProcessStartInfo
+       /* var processStartInfo = new ProcessStartInfo
         {
             FileName = "python",
             Arguments = "prun.py",
@@ -45,7 +47,22 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true
+        };*/
+
+        var pythonFilePath2 = "/home/pi/pidog/examples/prun.py";
+
+        // Python process'i çalıştırma ayarları
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "python3", // Raspberry'de genelde python3 olur
+            Arguments = pythonFilePath2, // Komut: python3 /home/pi/pidog/examples/prun.py
+            WorkingDirectory = "/home/pi/pidog/examples",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
+
 
         using var process = Process.Start(processStartInfo);
         if (process == null)
@@ -83,10 +100,12 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
         return Results.Problem(
             detail: ex.Message,
             statusCode: 500,
-            title: "Code execution failed"
+            title: "Code execution failed..."
         );
     }
 });
+
+app.Urls.Add("http://0.0.0.0:5280");
 
 app.Run();
 

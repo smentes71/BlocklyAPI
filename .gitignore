@@ -1,2 +1,11 @@
 node_modules/
 .env
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.vsidx
+*.cache
+*.exe
+*.dll
