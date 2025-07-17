@@ -48,7 +48,7 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
         // Create prun.py file with the received code
        // var pythonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "prun.py");
        // await File.WriteAllTextAsync(pythonFilePath, request.Code, Encoding.UTF8);
-        var pythonFilePath = "/home/pi/pidog/examples/prun.py";
+        var pythonFilePath = "/home/pi/pidog/examples/gelen_kod.py";
         await File.WriteAllTextAsync(pythonFilePath, request.Code, Encoding.UTF8);
 
         // Execute the Python file
@@ -63,7 +63,7 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
             CreateNoWindow = true
         };*/
 
-        var pythonFilePath2 = "/home/pi/pidog/examples/prun.py";
+        var pythonFilePath2 = "/home/pi/pidog/examples/gelen_kod.py";
 
         // Python process'i çalıştırma ayarları
         var processStartInfo = new ProcessStartInfo
