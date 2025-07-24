@@ -45,38 +45,46 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
 {
     try
     {
-        // Create prun.py file with the received code
-       // var pythonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "prun.py");
-       // await File.WriteAllTextAsync(pythonFilePath, request.Code, Encoding.UTF8);
         var pythonFilePath = "/home/pi/pidog/examples/gelen_kod.py";
         await File.WriteAllTextAsync(pythonFilePath, request.Code, Encoding.UTF8);
 
-        // Execute the Python file
-       /* var processStartInfo = new ProcessStartInfo
+        // 🔁 Önce: sudo start_wifi.sh scriptini çalıştır
+        var wifiStartProcess = new ProcessStartInfo
         {
-            FileName = "python",
-            Arguments = "prun.py",
-            WorkingDirectory = Directory.GetCurrentDirectory(),
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };*/
-
-        var pythonFilePath2 = "/home/pi/pidog/examples/gelen_kod.py";
-
-        // Python process'i çalıştırma ayarları
-        var processStartInfo = new ProcessStartInfo
-        {
-            FileName = "python3", // Raspberry'de genelde python3 olur
-            Arguments = pythonFilePath2, // Komut: python3 /home/pi/pidog/examples/prun.py
-            WorkingDirectory = "/home/pi/pidog/examples",
+            FileName = "sudo",
+            Arguments = "/home/pi/start_wifi.sh",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true
         };
 
+        using (var wifiProcess = Process.Start(wifiStartProcess))
+        {
+            if (wifiProcess == null)
+            {
+                return Results.Problem("Failed to start start_wifi.sh");
+            }
+
+            await wifiProcess.WaitForExitAsync();
+            if (wifiProcess.ExitCode != 0)
+            {
+                var wifiError = await wifiProcess.StandardError.ReadToEndAsync();
+                return Results.Problem("start_wifi.sh failed: " + wifiError);
+            }
+        }
+
+        // 🔁 Sonra: gelen_kod.py çalıştır
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = "python3",
+            Arguments = pythonFilePath,
+            WorkingDirectory = "/home/pi/pidog/examples",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
 
         using var process = Process.Start(processStartInfo);
         if (process == null)
@@ -117,6 +125,9 @@ app.MapPost("/execute", async (CodeExecutionRequest request) =>
             title: "Code execution failed..."
         );
     }
+
+
+
 });
 
 app.Urls.Add("http://0.0.0.0:5280");

@@ -1,0 +1,70 @@
+﻿
+bu kod gelen_kod içersiden düznelem yapar , sonra kullanılcaktır.
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+class PythonCleaner
+{
+    static void Main(string[] args)
+    {
+        string inputPath = "input.py";
+        string outputPath = "output_cleaned.py";
+
+        var lines = File.ReadAllLines(inputPath).ToList();
+        var cleanedLines = new List<string>();
+
+        bool shebangFound = false;
+        var importSet = new HashSet<string>();
+        bool pidogInitFound = false;
+
+        foreach (string line in lines)
+        {
+            string trimmed = line.Trim();
+
+            // Tek bir shebang satırı olsun
+            if (trimmed.StartsWith("#!"))
+            {
+                if (!shebangFound)
+                {
+                    cleanedLines.Add(line);
+                    shebangFound = true;
+                }
+                continue; // Diğerlerini atla
+            }
+
+            // Tekil importları filtrele
+            if (trimmed.StartsWith("from ") || trimmed.StartsWith("import "))
+            {
+                if (!importSet.Contains(trimmed))
+                {
+                    cleanedLines.Add(line);
+                    importSet.Add(trimmed);
+                }
+                continue;
+            }
+
+            // Sadece ilk "my_dog = Pidog()" satırı kalsın
+            if (trimmed.Contains("my_dog = Pidog()"))
+            {
+                if (!pidogInitFound)
+                {
+                    cleanedLines.Add(line);
+                    pidogInitFound = true;
+                }
+                continue;
+            }
+
+            // Diğer satırları doğrudan ekle
+            cleanedLines.Add(line);
+        }
+
+        File.WriteAllLines(outputPath, cleanedLines);
+
+        Console.WriteLine("Temizleme işlemi tamamlandı:");
+        Console.WriteLine($"- Girdi dosyası: {inputPath}");
+        Console.WriteLine($"- Temiz çıktı: {outputPath}");
+    }
+}
